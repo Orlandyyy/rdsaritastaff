@@ -1,30 +1,41 @@
-const selectedQuestions = getRandomQuestions(12);
-const container = document.getElementById("questions");
+document.addEventListener("DOMContentLoaded", () => {
 
-selectedQuestions.forEach((q, i) => {
-  container.innerHTML += `
-    <label>${i + 1}. ${q}</label>
-    <textarea name="Pregunta ${i + 1}" required></textarea>
-  `;
-});
+  const form = document.getElementById("staffForm");
+  const questionsDiv = document.getElementById("questions");
+  const TOTAL_QUESTIONS = 12;
 
-document.getElementById("staffForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const webhookURL = "https://discord.com/api/webhooks/1491094716949856268/ZE2DcCkVIPsRhLH-n_4rYTT4ukCpXrJmLGUmrX3m8n3iiL9dW6x0st_QxSWTXZi13JLN";
-
-  const formData = new FormData(this);
-  let content = "📩 NUEVA POSTULACIÓN STAFF – RDSarita World\n\n";
-
-  for (let pair of formData.entries()) {
-    content += `${pair[0]}:\n${pair[1]}\n\n`;
+  // Mezclar preguntas
+  function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
   }
 
-  fetch(webhookURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ content })
-  }).then(() => {
-    window.location.href = "success.html";
+  // Generar preguntas
+  const selectedQuestions = shuffle([...questions]).slice(0, TOTAL_QUESTIONS);
+
+  selectedQuestions.forEach((question, index) => {
+    const div = document.createElement("div");
+    div.className = "question-block";
+
+    const label = document.createElement("label");
+    label.textContent = `${index + 1}. ${question}`;
+
+    const textarea = document.createElement("textarea");
+    textarea.name = `Pregunta_${index + 1}`;
+    textarea.required = true;
+    textarea.rows = 4;
+
+    div.appendChild(label);
+    div.appendChild(textarea);
+    questionsDiv.appendChild(div);
   });
+
+  // Envío del formulario
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    alert("✅ Postulación enviada correctamente.\n(En esta versión no se envía a IA todavía)");
+
+    form.reset();
+  });
+
 });
