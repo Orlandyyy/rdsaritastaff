@@ -29,13 +29,35 @@ document.addEventListener("DOMContentLoaded", () => {
     questionsDiv.appendChild(div);
   });
 
-  // Envío del formulario
-  form.addEventListener("submit", (e) => {
+  // Envío del formulario a Discord
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    alert("✅ Postulación enviada correctamente.\n(En esta versión no se envía a IA todavía)");
+    const data = new FormData(form);
+    let message = "**📩 Nueva Postulación de Staff – RDSarita World**\n\n";
 
-    form.reset();
+    for (let [key, value] of data.entries()) {
+      message += `**${key}:**\n${value}\n\n`;
+    }
+
+    try {
+      await fetch("https://discord.com/api/webhooks/1491094716949856268/ZE2DcCkVIPsRhLH-n_4rYTT4ukCpXrJmLGUmrX3m8n3iiL9dW6x0st_QxSWTXZi13JLN", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          content: message.substring(0, 1900)
+        })
+      });
+
+      alert("✅ Postulación enviada correctamente");
+      form.reset();
+
+    } catch (error) {
+      alert("❌ Error al enviar la postulación");
+      console.error(error);
+    }
   });
 
 });
