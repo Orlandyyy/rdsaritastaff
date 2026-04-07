@@ -29,13 +29,14 @@ document.addEventListener("DOMContentLoaded", () => {
     questionsDiv.appendChild(div);
   });
 
-  // Envío del formulario a Discord
+  // Envío del formulario
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const data = new FormData(form);
-    let message = "**📩 Nueva Postulación de Staff – RDSarita World**\n\n";
 
+    // --- ENVIAR A DISCORD ---
+    let message = "**📩 Nueva Postulación de Staff – RDSarita World**\n\n";
     for (let [key, value] of data.entries()) {
       message += `**${key}:**\n${value}\n\n`;
     }
@@ -50,14 +51,27 @@ document.addEventListener("DOMContentLoaded", () => {
           content: message.substring(0, 1900)
         })
       });
-
-      alert("✅ Postulación enviada correctamente");
-      form.reset();
-
     } catch (error) {
-      alert("❌ Error al enviar la postulación");
+      alert("❌ Error al enviar a Discord");
       console.error(error);
     }
+
+    // --- ENVIAR A GOOGLE SHEETS ---
+    try {
+      await fetch("https://script.google.com/macros/s/AKfycbzJOfm8LZsO-0KBHDwxAWciBi22VGFgzYxmUlgkZMKr5nh2IVyqn9W9MVYOL6dkdsA0/exec", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(Object.fromEntries(data))
+      });
+    } catch (error) {
+      alert("❌ Error al guardar en Google Sheets");
+      console.error(error);
+    }
+
+    alert("✅ Postulación enviada correctamente");
+    form.reset();
   });
 
 });
